@@ -121,3 +121,4 @@ REACT_APP_BASE_URL="http://localhost:8000"
 Once both servers are running, you can access them at the following URL's:
 - Backend: http://localhost:8000
 - Frontend: http://localhost:3000
+# SecureOps-Pipeline
