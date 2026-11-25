@@ -1,26 +1,49 @@
 services:
   mongo:
-    image: mongo:7
+    image: mongo:4.4
+    container_name: shopmongocontainer
+    ports:
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      - shop-net
 
   backend:
-    build: ./backend
-    env_file: .env
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: shop-backend:v1
+    container_name: shopbackendcontainer
     ports:
       - "8000:8000"
+    environment:
+      - PORT=8000
+      - MONGO_URI=mongodb://mongo:27017/ecommerce
+    env_file:
+      - ./backend/.env
     depends_on:
       - mongo
+    networks:
+      - shop-net
 
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
       args:
-        REACT_APP_BASE_URL: http://localhost:8000
+        - REACT_APP_BASE_URL=http://localhost:8000
+    image: shop-frontend:v1
+    container_name: shopfrontendcontainer
     ports:
-      - "3000:80"
+      - "3000:3000"
     depends_on:
       - backend
-
+    networks:
+      - shop-net
 volumes:
   mongo_data:
+
+networks:
+  shop-net:
+    driver: bridge
