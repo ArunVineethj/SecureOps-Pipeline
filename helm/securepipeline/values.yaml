@@ -1,0 +1,48 @@
+# Every setting lives here. Templates read these with {{ .Values.<path> }}.
+
+# Name of the Secret you create with "kubectl create secret".
+# It must contain the keys: SECRET_KEY, EMAIL, PASSWORD
+secretName: shop-secret
+
+# Use the image that is already loaded inside Minikube
+imagePullPolicy: IfNotPresent
+
+# Normal (non-secret) settings -> ConfigMap
+config:
+  mongoUri: "mongodb://mongo:27017/shopdb"
+  # Must equal the address you type in the browser (no trailing slash).
+  # Port-forward access: http://localhost:3000   Ingress access: http://shop.local
+  origin: "http://localhost:3000"
+  loginTokenExpiration: "30d"
+  otpExpirationTime: "120000"
+  passwordResetTokenExpiration: "2m"
+  cookieExpirationDays: "30"
+  production: "false"
+
+mongo:
+  image: mongo:4.4
+  port: 27017
+  storage: 1Gi
+
+backend:
+  image:
+    repository: shop-backend
+    tag: v1
+  port: 8000
+  replicas: 1
+
+frontend:
+  image:
+    repository: shop-frontend
+    tag: v1
+  port: 3000            # Service port
+  containerPort: 3000   # Port Nginx listens on INSIDE your image (check it, see chat)
+  replicas: 1
+
+# Ingress is OFF by default. Turn it on only after the ingress controller is running:
+#   helm upgrade ... --set ingress.enabled=true
+ingress:
+  enabled: false
+  className: nginx
+  frontendHost: shop.local
+  backendHost: api.shop.local

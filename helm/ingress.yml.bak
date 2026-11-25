@@ -1,0 +1,5 @@
+ingress:
+  enabled: true
+  className: nginx
+  frontendHost: shop.local
+  backendHost: api.shop.local
